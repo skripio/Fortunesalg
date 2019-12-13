@@ -1,4 +1,5 @@
-function drawRandomPoints(len, brd, attr, range){
+ //draw (len) random points of (range) with (attr) on brd, concate new points to current point set 
+ function drawRandomPoints(len, brd, attr, range){
 	if(len <= 0) return;
 	range = (typeof range !== 'undefined') ?  range :  [-10, 10, 10, -10];
 	var p = [];
@@ -8,20 +9,14 @@ function drawRandomPoints(len, brd, attr, range){
 	return p;
  }
  
+ //draw parabolas on brd base on points in p and line mp
  function drawParabolas(p, brd){
 	 p.forEach(function (value) {
 	  	board.create('functiongraph', [function(x){return parabola(value, x);}],{dash:2});
 	 }); 
-	 if(typeof beachline !== 'undefined') brd.removeObject(beachline);
-	 brd.create('functiongraph', [function(x){
-		 var minimum = Number.POSITIVE_INFINITY;
-		 points.forEach(function (value) {
-			if(parabola(value, x) < minimum) minimum = parabola(value, x);
-		 }); 
-		 return minimum;}]);
  }
  
- function parabola(p1, x) { //site, horizontal line and x coordinate
+ function parabola(p1, x) { //site and x coordinate
  	var y1 = p1.Y();
 	var x1 = p1.X();
 	var l = mp.Y();
@@ -38,7 +33,6 @@ function drawRandomPoints(len, brd, attr, range){
  
  var beachline;
  var points = [];
- 
  var attr = {
 		fillColor: "black",
 		strokeColor: "black",
@@ -46,6 +40,14 @@ function drawRandomPoints(len, brd, attr, range){
 	};
 	
  var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-10, 10, 10, -10], axis:true});
+ 
+ //beachline, initialize only once because reference to points array
+ board.create('functiongraph', [function(x){
+		 var minimum = Number.POSITIVE_INFINITY;
+		 points.forEach(function (value) {
+			if(parabola(value, x) < minimum) minimum = parabola(value, x);
+		 }); 
+		 return minimum;}]);
  
 // var li3 = board.create('line',[[-1,1],[1,-1]], {straightFirst:false, straightLast:false, strokeWidth:2});
 
