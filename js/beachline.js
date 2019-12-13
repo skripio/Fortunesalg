@@ -11,6 +11,7 @@ function Beachline(points){
     while(EL.size > 0){
         var node = EL.maxNode();
         var point = node.value;
+        line = node.key;
         if(point.isSite){
             SS.insert(point.x,point);
             var arr = SS.toSortedArray();
@@ -28,11 +29,25 @@ function Beachline(points){
             for(;i<ne.length-2;i++){
                 var center = point.center(ne[i],ne[i+1],ne[i+2]);
                 var radius = point.distance(center,ne[i]);
-                EL.remove(center-radius);
+                EL.remove(center.y-radius);
             }
         }else{
             var points = point.points;
             if(points[1].y > points[0].y && points[1].y > points[2].y){
+                var arr = SS.toSortedArray();
+                var ne = BS(arr,0,arr.length,point.x);
+                var index,i=0;
+                for(;i<ne.length-2;i++){
+                    if(point.isSamePoint(ne[i],point)){
+                        index = i;
+                    }
+                }
+                for(;i<ne.length-2;i++){
+                    var center = point.center(ne[i],ne[i+1],ne[i+2]);
+                    var radius = point.distance(center,ne[i]);
+                    EL.insert(center.y-radius,center);
+                }
+                ne.splice(index,1);
                 SS.remove(points[1].x);
             }
             VD.push(point);
