@@ -1,30 +1,57 @@
 import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
+import point from "./Point.js"
+import circle from "./circle.js"
 
-
-var rbTree = new RbTree();
-var i;
-// rbTree.insert(1, "foo");
-var p1 = new point(115.8, 39.8,true);
-var p2 = new point(116.3, 39.9,true);
-var p3 = new point(117, 39.5,true);
-var arr = [p1,p2,p3];
-for(i=0;i<=2;i++){
-    var p = arr[i];
-    rbTree.insert(p.y, p);
-    // console.log(rbTree.size);
+var p1 = new point(0.9034, -4.5721,true);
+var p2 = new point(4.3699, 3.3641,true);
+var p3 = new point(7.5829, -4.1547,true);
+var c = new circle(p1,p2,p3);
+var inter = point.paraIntersection(p1,p2,p3);
+console.log(inter);
+var map = new Hashtable();
+if(!map.containsKey(new circle(p1,p2,p3))){
+    var yarr = [p1.y,p2.y,p3.y];
+    var miny = Math.min(...yarr);
+    var center = point.center(p1,p2,p3);
+    var radius = point.distance(center,p2);
+    console.log(yarr[0],miny);
+    if((yarr[0] == miny && center.x > p1.x) || (yarr[2] == miny && center.x < p3.x))
+        if(center.y - radius < p3.y){
+            EL.insert(center.y - radius,center);
+            map.put(new circle(p1,p2,p3),[center,radius]);
+        }
 }
-var center = point.center(p1,p2,p3);
-var radius = point.distance(center,p2);
-rbTree.insert(center.y - radius,center);
-rbTree.print();
-console.log(rbTree.size)
-var c = point.center(p1,p2,p3);
-var r = point.distance(center,p2);
-rbTree.remove(c.y - r);
-console.log(rbTree.size);
-console.log(point.paraIntersection(p1,p2,c.y-r));
-console.log(point.paraIntersection(p2,p3,c.y-r));
-console.log(point.xEqualwithEpsilon(c.x, point.paraIntersection(p2,p3,c.y-r)[0]));
+console.log(map.get(new circle(p1,p2,p3)));
+// var center = point.center(p1,p2,p3);
+// var radius = point.distance(center,p2);
+// map.put(c,[center,radius]);
+// console.log(map.get(new circle(p2,p1,p3)));
+// console.log(c.points);
+
+// var rbTree = new RbTree();
+// var i;
+// // rbTree.insert(1, "foo");
+// var p1 = new point(115.8, 39.8,true);
+// var p2 = new point(116.3, 39.9,true);
+// var p3 = new point(117, 39.5,true);
+// var arr = [p1,p2,p3];
+// for(i=0;i<=2;i++){
+//     var p = arr[i];
+//     rbTree.insert(p.y, p);
+//     // console.log(rbTree.size);
+// }
+// var center = point.center(p1,p2,p3);
+// var radius = point.distance(center,p2);
+// rbTree.insert(center.y - radius,center);
+// rbTree.print();
+// console.log(rbTree.size)
+// var c = point.center(p1,p2,p3);
+// var r = point.distance(center,p2);
+// rbTree.remove(c.y - r);
+// console.log(rbTree.size);
+// console.log(point.paraIntersection(p1,p2,c.y-r));
+// console.log(point.paraIntersection(p2,p3,c.y-r));
+// console.log(point.xEqualwithEpsilon(c.x, point.paraIntersection(p2,p3,c.y-r)[0]));
 // var arr = rbTree.toSortedArray();
 // // console.log(BS(arr,0,arr.length,3));
 // function BS(arr,left,right,value){

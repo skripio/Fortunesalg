@@ -1,4 +1,6 @@
  import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
+ import point from "./Point.js"
+ import circle from "./circle.js"
  
  //draw (len) random points of (range) with (attr) on brd, concate new points to current point set 
  function drawRandomPoints(len, brd, attr, range){
@@ -51,13 +53,25 @@
  }
  
  function onclickRun(){
-	 document.getElementById("stepBtn").setAttribute("disabled","");
-	 mp.moveTo([1,-9],6000);
+	//  document.getElementById("stepBtn").setAttribute("disabled","");
+	//  mp.moveTo([1,-9],6000);
+	SS = [];
+	EL = new RbTree();
+	VD = [];
+	map = new Hashtable();
+	for(var pt of points){
+		var ptclass = new point(pt.X(),pt.Y(),true);
+		EL.insert(ptclass.y,ptclass);
+	}
  }
  
  function onclickStart(){
 	 if(startClicked) return;
 	 startClicked = true;
+	 for(var pt of points){
+		var ptclass = new point(pt.X(),pt.Y(),true);
+        EL.insert(ptclass.y,ptclass);
+    }
 	 document.getElementById("runBtn").removeAttribute("disabled");
 	 document.getElementById("stepBtn").removeAttribute("disabled");
 	 document.getElementById("generateBtn").setAttribute("disabled","");
@@ -82,14 +96,179 @@
  }
  
  function onclickNextStep(){
-	 
+	if(EL.size > 0){
+        var node = EL.maxNode();
+        var pt = node.value;
+		var line = node.key;
+		moveSweepline(line);
+		var index = -1;
+		EL.remove(node.key);
+        if(pt.isSite){
+            if(SS.length == 0){
+                SS.push(pt);
+            }else{
+                index = BSarc(SS,0,SS.length,pt.x,line);
+                var above = SS[index];
+                if(index > 0 && index < SS.length - 1 && !point.isSamePoint(SS[index-1],SS[index+1])){
+					var cir = map.get(new circle(SS[index-1],above,SS[index+1]));
+					if(cir != null){
+						var center = cir[0];
+						var radius = cir[1];
+						// console.log(SS[index-1],above,SS[index+1]);
+						// console.log(EL.toSortedArray());
+						// console.log(EL.findNode(center.y-radius));
+						EL.remove(center.y-radius);
+					}
+                }
+                SS.splice(index,0,above,pt);
+				index++;
+				console.log(SS,index);
+				if(index > 1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index]))){
+					var center = point.center(SS[index-2],SS[index-1],SS[index]);
+					var radius = point.distance(center,SS[index-1]);
+					// may need a set to store added centers
+					if(center.y - radius < line && center.x < pt.x){
+						EL.insert(center.y - radius,center);
+						map.put(new circle(SS[index-2],SS[index-1],SS[index]),[center,radius]);
+					}
+				}
+				if(index < SS.length-2 && !map.containsKey(new circle(SS[index],SS[index+1],SS[index+2]))){
+					var center = point.center(SS[index],SS[index+1],SS[index+2]);
+					var radius = point.distance(center,SS[index+1]);
+					// may need a set to store added centers
+					if(center.y - radius < line && center.x > pt.x){
+						EL.insert(center.y - radius,center);
+						map.put(new circle(SS[index],SS[index+1],SS[index+2]),[center,radius]);
+					}
+				}
+            }
+        }else{
+			index = BScenter(SS,0,SS.length,pt.x,line);
+			console.log(index,pt);
+			if(index > 1 && index < SS.length-1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index+1]))){
+				var yarr = [SS[index-2].y,SS[index-1].y,SS[index+1].y];
+				var miny = Math.min(...yarr);
+				var center = point.center(SS[index-2],SS[index-1],SS[index+1]);
+				var radius = point.distance(center,SS[index-1]);
+				console.log(yarr[0] == miny);
+				if((yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x))
+					if(center.y - radius < line){
+						EL.insert(center.y - radius,center);
+						map.put(new circle(SS[index-2],SS[index-1],SS[index+1]),[center,radius]);
+					}
+			}
+			if(index < SS.length-2 && index > 0 && !map.containsKey(new circle(SS[index-1],SS[index+1],SS[index+2]))){
+				var yarr = [SS[index-1].y,SS[index+1].y,SS[index+2].y];
+				var miny = Math.min(...yarr);
+				var center = point.center(SS[index-1],SS[index+1],SS[index+2]);
+				var radius = point.distance(center,SS[index+1]);
+				if((yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x))
+					if(center.y - radius < line){
+						EL.insert(center.y - radius,center);
+						map.put(new circle(SS[index-1],SS[index+1],SS[index+2]),[center,radius]);
+					}
+			}
+
+			if(index > 1){
+				var cir = map.get(new circle(SS[index-2],SS[index-1],SS[index]));
+				if(cir != null){
+					var center = cir[0];
+					var radius = cir[1];
+					EL.remove(center.y-radius);
+				}
+			}
+			if(index < SS.length-2){
+				var cir = map.get(new circle(SS[index],SS[index+1],SS[index+2]));
+				if(cir != null){
+					var center = cir[0];
+					var radius = cir[1];
+					EL.remove(center.y-radius);
+				}
+			}
+            SS.splice(index,1);
+			VD.push(pt);
+			addPoint([pt.x,pt.y],board);
+        }
+    }
  }
+
+ function BSarc(arr,left,right,value,line){
+    if(left >= right){
+		// console.log(left);
+        return left;
+    }
+    var li = Number.NEGATIVE_INFINITY,ri = Number.POSITIVE_INFINITY;
+	var mid = left+Math.floor((right-left)/2);
+	var arc = arr[mid];
+	if(mid > 0 && mid < arr.length-1 && point.isSamePoint(arr[mid-1],arr[mid+1])){
+		var temparr = point.paraIntersection(arr[mid-1],arc,line);
+		li = temparr[0], ri = temparr[1];
+	}else{
+		if(mid > 0){
+			var boundindex = arr[mid-1].y < arc.y ? 1 : 0;
+			li = point.paraIntersection(arr[mid-1],arc,line)[boundindex];
+		}
+		if(mid < arr.length-1){
+			var boundindex = arr[mid+1].y < arc.y ? 0 : 1;
+			ri = point.paraIntersection(arc,arr[mid+1],line)[boundindex];
+		}
+	}
+	// console.log(mid,li,ri);
+    if(value > li && value <= ri){
+		// console.log(mid);
+        return mid;
+    }
+    if(value > ri){
+        return BSarc(arr,mid+1,right,value,line);
+    }else{
+        return BSarc(arr,left,mid-1,value,line);
+    }
+}
+
+function BScenter(arr,left,right,value,line){
+    if(left >= right){
+        return left;
+    }
+    var li = Number.NEGATIVE_INFINITY,ri = Number.POSITIVE_INFINITY;
+    var mid = left+Math.floor((right-left)/2);
+	var arc = arr[mid];
+	if(mid > 0 && mid < arr.length-1 && point.isSamePoint(arr[mid-1],arr[mid+1])){
+		var temparr = point.paraIntersection(arr[mid-1],arc,line);
+		li = temparr[0], ri = temparr[1];
+	}else{
+		if(mid > 0){
+			var boundindex = arr[mid-1].y < arc.y ? 1 : 0;
+			li = point.paraIntersection(arr[mid-1],arc,line)[boundindex];
+		}
+		if(mid < arr.length-1){
+			var boundindex = arr[mid+1].y < arc.y ? 0 : 1;
+			ri = point.paraIntersection(arc,arr[mid+1],line)[boundindex];
+		}
+	}
+	console.log(mid,li,ri);
+    if(point.xEqualwithEpsilon(li,value) && point.xEqualwithEpsilon(ri,value)){
+        return mid;
+    }else if(point.xEqualwithEpsilon(li,value)){
+        return mid-1;
+    }else if(point.xEqualwithEpsilon(ri,value)){
+        return mid+1;
+    }
+    if(value > ri){
+        return BScenter(arr,mid+1,right,value,line);
+    }else{
+        return BScenter(arr,left,mid-1,value,line);
+    }
+}
  
  var beachline;
  var points = [];
  var parabolas = [];
  var showPara = true;
  var startClicked = false;
+ var SS = [];
+ var EL = new RbTree();
+ var VD = [];
+ var map = new Hashtable();
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",

@@ -4,15 +4,13 @@ function Beachline(points){
     var SS = [];
     var EL = new RbTree();
     var VD = [];
-    var line = Infinity;
-    var point;
     for(point in points){
         EL.insert(point.y,point);
     }
     while(EL.size > 0){
         var node = EL.maxNode();
         var point = node.value;
-        line = node.key;
+        var line = node.key;
         var index = -1;
         if(point.isSite){
             if(SS.length == 0){
@@ -30,15 +28,16 @@ function Beachline(points){
                 for(var i in [-1,1]){
                     var center = point.center(SS[index+2*i],SS[index+i],SS[index]);
                     var radius = point.distance(center,SS[index+i]);
-                    EL.insert(center.y - radius,center);
+                    if(center.y - radius < line)
+                        EL.insert(center.y - radius,center);
                 }
             }
         }else{
-            var index = BScenter(SS,0,SS.length,point.x);
+            index = BScenter(SS,0,SS.length,point.x);
             for(var i in [-1,1]){
                 var center = point.center(SS[index+2*i],SS[index+i],SS[index]);
                 var radius = point.distance(center,SS[index+i]);
-                if(EL.find(center.y - radius) == null)
+                if(center.y - radius < line && EL.find(center.y - radius) == null)
                     EL.insert(center.y - radius,center);
             }
             SS.splice(index,1);
