@@ -12,7 +12,9 @@
  //draw parabolas on brd base on points in p and line mp
  function drawParabolas(p, brd){
 	 p.forEach(function (value) {
-	  	board.create('functiongraph', [function(x){return parabola(value, x);}],{dash:2});
+	  	var pra = board.create('functiongraph', [function(x){return parabola(value, x);}],{dash:2});
+		if(!showPara) pra.hideElement();
+		parabolas.push(pra);
 	 }); 
  }
  
@@ -26,20 +28,46 @@
 	  return Number.POSITIVE_INFINITY;
  }
  
+ function hideAllParabolas(){
+	 showPara = false;
+	 parabolas.forEach(function (value) {
+	  	value.hideElement();
+	 }); 
+ }
+ 
+ function showAllParabolas(){
+	 showPara = true;
+	 parabolas.forEach(function (value) {
+	  	value.showElement();
+	 }); 
+ }
+ 
  function onclickGenerate(){
 	 var number = document.getElementById("pointNumber").value;
      drawParabolas(drawRandomPoints(number, board, attr), board);
  }
  
+ function setSteps(p){
+	 stepPosistions = p;
+ }
+ 
+ function onclickNextStep(){
+	 if(currStep < stepPosistions.length)
+	 	mp.moveTo([1,stepPosistions[currStep++]],1000);
+ }
+ 
  var beachline;
  var points = [];
+ var parabolas = [];
+ var showPara = true;
+ var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
 		strokeColor: "black",
 		withLabel: false
 	};
 	
- var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-10, 10, 10, -10], axis:true});
+ var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-10, 10, 10, -10], axis:false});
  
  //beachline, initialize only once because reference to points array
  board.create('functiongraph', [function(x){
@@ -47,13 +75,13 @@
 		 points.forEach(function (value) {
 			if(parabola(value, x) < minimum) minimum = parabola(value, x);
 		 }); 
-		 return minimum;}]);
+		 return minimum;}], {strokeColor:'red', strokeWidth:2});
  
 // var li3 = board.create('line',[[-1,1],[1,-1]], {straightFirst:false, straightLast:false, strokeWidth:2});
 
  //initialize horizontal gdragable line
  var mp = board.create('point',[1,0],{name:"drag", withLabel: false, face:'o', size:8, strokeColor:'red', fillOpacity:0.6, strokeOpacity: 0.6});
- var horizontalLine = board.create('line',["drag",[20000,"Y(drag)"]], {straightFirst:true, straightLast:true, strokeWidth:2});
+ var horizontalLine = board.create('line',["drag",[20000,"Y(drag)"]], {straightFirst:true, straightLast:true, strokeWidth:1});
  
  //drawParabolas(drawRandomPoints(10, board, attr), board);
 
@@ -80,7 +108,9 @@
                 break;
             }
         }
-
+		
+		//if(mp.hasPoint(coords.scrCoords[1], coords.scrCoords[2])) canCreate = false;
+               
         if (canCreate) {
             var tmp = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], attr);
 			points.push(tmp);
