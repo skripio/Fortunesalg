@@ -1,3 +1,5 @@
+ import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
+ 
  //draw (len) random points of (range) with (attr) on brd, concate new points to current point set 
  function drawRandomPoints(len, brd, attr, range){
 	if(len <= 0) return;
@@ -51,16 +53,32 @@
 	 stepPosistions = p;
  }
  
+ function moveSweepline(toY){
+	 mp.moveTo([1,toY],1000);
+ }
+ 
+ //add one point pt [x, y]
+ function addPoint(pt, brd){
+	 brd.create('point',pt,{
+		fillColor: "red",
+		strokeColor: "red",
+		withLabel: false
+	 });
+ }
+ 
+ function addVDEdge(){
+	 
+ }
+ 
  function onclickNextStep(){
-	 if(currStep < stepPosistions.length)
-	 	mp.moveTo([1,stepPosistions[currStep++]],1000);
+	 
  }
  
  var beachline;
  var points = [];
  var parabolas = [];
  var showPara = true;
- var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
+ //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
 		strokeColor: "black",
