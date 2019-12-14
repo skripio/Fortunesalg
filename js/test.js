@@ -15,11 +15,11 @@ if(!map.containsKey(new circle(p1,p2,p3))){
     var center = point.center(p1,p2,p3);
     var radius = point.distance(center,p2);
     console.log(yarr[0],miny);
-    if((yarr[0] == miny && center.x > p1.x) || (yarr[2] == miny && center.x < p3.x))
-        if(center.y - radius < p3.y){
-            EL.insert(center.y - radius,center);
-            map.put(new circle(p1,p2,p3),[center,radius]);
-        }
+    // if((yarr[0] == miny && center.x > p1.x) || (yarr[2] == miny && center.x < p3.x))
+    //     if(center.y - radius < p3.y){
+    //         EL.insert(center.y - radius,center);
+    //         map.put(new circle(p1,p2,p3),[center,radius]);
+    //     }
 }
 console.log(map.get(new circle(p1,p2,p3)));
 // var center = point.center(p1,p2,p3);
