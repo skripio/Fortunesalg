@@ -29,22 +29,25 @@
           <input type="text" class="form-control" id="pointNumber" placeholder="Number of points">
         </div>
         <div class="col-auto">
-          <button type="button" onClick = "onclickGenerate()" class="btn btn-primary mb-2">Generate</button>
+          <button id="generateBtn" type="button" class="btn btn-primary mb-2">Generate</button>
         </div>
         <div class="btn-group btn-group-toggle col-auto" data-toggle="buttons" style="margin-bottom:1%">
           <label class="btn btn-secondary active">
-            <input type="radio" onClick="showAllParabolas()" name="options" id="option1" autocomplete="off" checked> Show Parabola
+            <input type="radio" name="options" id="option1" autocomplete="off" checked> Show Parabola
           </label>
           <label class="btn btn-secondary">
-            <input type="radio" onClick="hideAllParabolas()" name="options" id="option2" autocomplete="off"> Hide Parabola
+            <input type="radio" name="options" id="option2" autocomplete="off"> Hide Parabola
           </label>
          </div>
       </div>
     </form>
-    
-    <button type="button" onClick="mp.moveTo([1,-9],6000)" class="btn btn-primary btn-lg btn-block">Run</button>
-    <button type="button" onClick="onclickNextStep()" class="btn btn-primary btn-lg btn-block">Step</button>
+    <button id="startBtn" type="button" class="btn btn-success btn-lg btn-block">Start</button>
+    <button id="runBtn" type="button" class="btn btn-primary btn-lg btn-block" disabled>Run</button>
+    <button id="stepBtn" type="button" class="btn btn-primary btn-lg btn-block" disabled >Step</button>
     <button type="button" onClick="location.reload();" class="btn btn-warning btn-lg btn-block">Reset</button>
+    <div>
+    Instruction:
+    </div>
 </div>
 </div>
 </div>

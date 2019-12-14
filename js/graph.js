@@ -5,6 +5,7 @@
 	if(len <= 0) return;
 	range = (typeof range !== 'undefined') ?  range :  [-10, 10, 10, -10];
 	var p = [];
+	var i;
 	for (i=0;i<len;i++) 
 		p[i] = brd.create('point',[Math.random() * (range[1] - range[0]) + range[0], Math.random() * (range[3] - range[2]) + range[2]],attr);
 	points = points.concat(p);
@@ -49,8 +50,18 @@
      drawParabolas(drawRandomPoints(number, board, attr), board);
  }
  
- function setSteps(p){
-	 stepPosistions = p;
+ function onclickRun(){
+	 document.getElementById("stepBtn").setAttribute("disabled","");
+	 mp.moveTo([1,-9],6000);
+ }
+ 
+ function onclickStart(){
+	 if(startClicked) return;
+	 startClicked = true;
+	 document.getElementById("runBtn").removeAttribute("disabled");
+	 document.getElementById("stepBtn").removeAttribute("disabled");
+	 document.getElementById("generateBtn").setAttribute("disabled","");
+	 
  }
  
  function moveSweepline(toY){
@@ -78,6 +89,7 @@
  var points = [];
  var parabolas = [];
  var showPara = true;
+ var startClicked = false;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
@@ -86,6 +98,13 @@
 	};
 	
  var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-10, 10, 10, -10], axis:false});
+ 
+ document.getElementById("generateBtn").onclick = onclickGenerate;
+ document.getElementById("option1").onclick = showAllParabolas;
+ document.getElementById("option2").onclick = hideAllParabolas;
+ document.getElementById("startBtn").onclick = onclickStart;
+ document.getElementById("runBtn").onclick = onclickRun;
+ document.getElementById("stepBtn").onclick = onclickNextStep;
  
  //beachline, initialize only once because reference to points array
  board.create('functiongraph', [function(x){
