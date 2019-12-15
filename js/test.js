@@ -39,9 +39,13 @@ console.log(map.get(new circle(p1,p2,p3)));
 // console.log(map.get(new circle(p2,p1,p3)));
 // console.log(c.points);
 
-// var rbTree = new RbTree();
-// var i;
-// // rbTree.insert(1, "foo");
+var rbTree = new RbTree();
+var i;
+rbTree.insert(1, "foo");
+rbTree.insert(1, "var");
+rbTree.remove(1);
+rbTree.print();
+console.log(rbTree.toSortedArray());
 // var p1 = new point(115.8, 39.8,true);
 // var p2 = new point(116.3, 39.9,true);
 // var p3 = new point(117, 39.5,true);

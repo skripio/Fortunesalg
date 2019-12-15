@@ -1,8 +1,9 @@
 ﻿class point {
-	constructor(x, y, isSite) {
+	constructor(x, y, isSite, isVD) {
 	  this.x = x;
 	  this.y = y;
 	  this.isSite = isSite;
+	  this.isVD = isVD;
 	//   this.points = points;
 	}
 
@@ -53,6 +54,14 @@
 		// console.log(ax1,ax2);
 		var ans = [Math.min(ax1,ax2),Math.max(ax1,ax2)];
 		return ans;
+	}
+
+	pointInpara(xcoor,yp){
+		var x = this.x;
+		var y = this.y;
+		var a = 1/(2*(y-yp)), b = -x/(y-yp), c = (x*x+y*y-yp*yp)/(2*(y-yp));
+		ycoor = a*xcoor*xcoor + b * xcoor + c;
+		return new point(xcoor,ycoor,null,false);
 	}
 
 	static xEqualwithEpsilon(p1x,p2x){

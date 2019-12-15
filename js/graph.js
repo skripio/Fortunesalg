@@ -1,6 +1,7 @@
  import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
  import point from "./Point.js"
  import circle from "./circle.js"
+import vdedge from "./vdedge.js";
  
  //draw (len) random points of (range) with (attr) on brd, concate new points to current point set 
  function drawRandomPoints(len, brd, attr, range){
@@ -115,7 +116,9 @@
                 SS.push(pt);
             }else{
                 index = BSarc(SS,0,SS.length,pt.x,line);
-                var above = SS[index];
+				var above = SS[index];
+				var intersec = above.pointInpara(pt.x,line);
+				vde.put(new vdedge(pt,above),[intersec]);
                 if(index > 0 && index < SS.length - 1 && !point.isSamePoint(SS[index-1],SS[index+1])){
 					var cir = map.get(new circle(SS[index-1],above,SS[index+1]));
 					if(cir != null){
@@ -132,7 +135,6 @@
 				index++;
 				console.log(SS,index);
 				if(index > 1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index]))){
-					
 					var center = point.center(SS[index-2],SS[index-1],SS[index]);
 					var radius = point.distance(center,SS[index-1]);
 					console.log("left",center,radius,center.y - radius < line);
@@ -286,6 +288,7 @@ function BScenter(arr,left,right,value,line){
  var EL = new RbTree();
  var VD = [];
  var map = new Hashtable();
+ var vde = new Hashtable();
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
