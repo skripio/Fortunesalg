@@ -57,17 +57,22 @@ import BinaryHeap from "./maxheap.js"
  }
  
 
+ function drawHorizontalLine(Y){
+	 var line = board.create('line',[[1,Y],[2,Y]], {straightFirst:true, straightLast:true, strokeWidth:1, strokeColor: "green"});
+	 mapYtoLine.put(Y, line);
+ }
+ 
+ function removeHorizontalLine(Y){
+	 var line = mapYtoLine.get(Y);
+	 line.hideElement();
+ }
  
  function onclickRun(){
 	var element = document.getElementById("stepBtn");
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	
-	var element = document.getElementById("runBtn");
-	element.setAttribute("disabled", "");
-	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
-	
-	var element = document.getElementById("finishBtn");
+	element = document.getElementById("finishBtn");
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	
@@ -76,15 +81,6 @@ import BinaryHeap from "./maxheap.js"
 		//delay stepRunningTime
 		
 	}
-	
-	/*SS = [];
-	EL = new RbTree();
-	VD = [];
-	map = new Hashtable();
-	for(var pt of points){
-		var ptclass = new point(pt.X(),pt.Y(),true);
-		EL.insert(ptclass.y,ptclass);
-	}*/
  }
  
  function onclickFinish(){
@@ -92,11 +88,7 @@ import BinaryHeap from "./maxheap.js"
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	
-	var element = document.getElementById("runBtn");
-	element.setAttribute("disabled", "");
-	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
-	
-	var element = document.getElementById("finishBtn");
+	element = document.getElementById("finishBtn");
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	
@@ -114,11 +106,7 @@ import BinaryHeap from "./maxheap.js"
         EL.insert(ptclass);
     }
 	 
-	 var element = document.getElementById("runBtn");
-	 element.removeAttribute("disabled");
-  	 element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-primary");
-	 
-	 element = document.getElementById("stepBtn");
+	 var element = document.getElementById("stepBtn");
 	 element.removeAttribute("disabled");
   	 element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-primary");
 	 
@@ -165,10 +153,6 @@ import BinaryHeap from "./maxheap.js"
  }
  
  function onclickNextStep(){
-	var element = document.getElementById("runBtn");
-	element.setAttribute("disabled", "");
-	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
-	
 	if(EL.size() > 0){
         // var node = EL.maxNode();
 		var pt = EL.removeHead();
@@ -177,7 +161,7 @@ import BinaryHeap from "./maxheap.js"
 			return;
 		}
 		var line = pt.line;
-		stepRunningTime = moveSweepline(line);
+		moveSweepline(line);
 		var index = -1;
 		// EL.remove(node.key);
         if(pt.isSite){
@@ -316,10 +300,6 @@ import BinaryHeap from "./maxheap.js"
 	var element = document.getElementById("resetLineBtn");
 		element.removeAttribute("disabled");
 		element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-warning");
-		
-	element = document.getElementById("runBtn");
-		element.setAttribute("disabled", "");
-		element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	 
 	element = document.getElementById("stepBtn");
 		element.setAttribute("disabled", "");
@@ -429,7 +409,8 @@ function BScenter(arr,left,right,value,line){
  var map = new Hashtable();
  var vde = new Hashtable();
  var removed = new Hashtable();
- var algFinished = false, stepRunningTime = 500;
+ var mapYtoLine = new Hashtable();
+ var algFinished = false;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
@@ -443,7 +424,6 @@ function BScenter(arr,left,right,value,line){
  document.getElementById("option1").onclick = showAllParabolas;
  document.getElementById("option2").onclick = hideAllParabolas;
  document.getElementById("startBtn").onclick = onclickStart;
- document.getElementById("runBtn").onclick = onclickRun;
  document.getElementById("stepBtn").onclick = onclickNextStep;
  document.getElementById("finishBtn").onclick = onclickFinish;
  document.getElementById("resetLineBtn").onclick = function(){mp.moveTo([0,0]);};
@@ -485,8 +465,6 @@ function BScenter(arr,left,right,value,line){
                 break;
             }
         }
-		
-		//if(mp.hasPoint(coords.scrCoords[1], coords.scrCoords[2])) canCreate = false;
                
         if (canCreate) {
             var tmp = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], attr);
