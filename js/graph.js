@@ -217,7 +217,31 @@ import vdedge from "./vdedge.js";
 			VD.push(pt);
 			addPoint([pt.x,pt.y],board);
         }
-    }
+    }else{
+		finishAlgo();
+	}
+ }
+
+ function finishAlgo(){
+	for(var entry of vde.entries()){
+		var key = entry[0];
+		var value = entry[1];
+		if(value.length == 1){
+			var p1 = Math.max(...key.points);
+			var p2 = Math.min(...key.points);
+			var inter = p1.pointInpara(p2.x,p2.y);
+			addRay([inter.x,inter.y],[value[0].x,value[0].y]);
+		}else{
+			if(value[0].isVD && value[1].isVD){
+				continue;
+			}
+			if(value[0].isVD){
+				addRay([value[0].x,value[0].y],[value[1].x,value[1].y]);
+			}else{
+				addRay([value[1].x,value[1].y],[value[0].x,value[0].y]);
+			}
+		}
+	}
  }
 
  function updateVertex(points,center){
