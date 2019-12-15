@@ -68,6 +68,7 @@
  function onclickStart(){
 	 if(startClicked) return;
 	 startClicked = true;
+	 mp.moveTo([1,11]);
 	 for(var pt of points){
 		var ptclass = new point(pt.X(),pt.Y(),true);
         EL.insert(ptclass.y,ptclass);
@@ -123,6 +124,7 @@
 						// console.log(SS[index-1],above,SS[index+1]);
 						// console.log(EL.toSortedArray());
 						// console.log(EL.findNode(center.y-radius));
+						console.log("remove",center,radius);
 						EL.remove(center.y-radius);
 					}
                 }
@@ -186,6 +188,7 @@
 				if(cir != null){
 					var center = cir[0];
 					var radius = cir[1];
+					console.log("remove",center,radius);
 					EL.remove(center.y-radius);
 				}
 			}
@@ -194,6 +197,7 @@
 				if(cir != null){
 					var center = cir[0];
 					var radius = cir[1];
+					console.log("remove",center,radius);
 					EL.remove(center.y-radius);
 				}
 			}
