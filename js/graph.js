@@ -227,9 +227,14 @@ import vdedge from "./vdedge.js";
 		var key = entry[0];
 		var value = entry[1];
 		if(value.length == 1){
-			var p1 = Math.max(...key.points);
-			var p2 = Math.min(...key.points);
-			var inter = p1.pointInpara(p2.x,p2.y);
+			var p1 = key.points[0];
+			var p2 = key.points[1];
+			var inter;
+			if(p1.y > p2.y){
+				inter =  p1.pointInpara(p2.x,p2.y);
+			}else{
+				inter = p2.pointInpara(p1.x,p1.y);
+			}
 			addRay([inter.x,inter.y],[value[0].x,value[0].y]);
 		}else{
 			if(value[0].isVD && value[1].isVD){
