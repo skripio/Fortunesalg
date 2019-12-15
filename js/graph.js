@@ -79,7 +79,10 @@
  }
  
  function moveSweepline(toY){
-	 mp.moveTo([1,toY],1000);
+	 var diff = Math.abs(toY - oldY);
+	 var runingTime = 1000 * diff / 2;
+	 mp.moveTo([1,toY],runingTime);
+	 oldY = toY;
  }
  
  //add one point pt [x, y]
@@ -88,11 +91,14 @@
 		fillColor: "red",
 		strokeColor: "red",
 		withLabel: false
+		//size: 2,
+		//face:'<>'
 	 });
  }
  
- function addVDEdge(){
-	 
+ function addEdge(point1, point2){
+	 var edgeAttr = {straightFirst:false, straightLast:false, strokeWidth:2, strokeColor:'black'};
+	 var li3 = board.create('line',[[point1[0],point1[1]],[point2[0],point2[1]]], edgeAttr);
  }
  
  function onclickNextStep(){
@@ -124,10 +130,13 @@
 				index++;
 				console.log(SS,index);
 				if(index > 1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index]))){
+					
 					var center = point.center(SS[index-2],SS[index-1],SS[index]);
 					var radius = point.distance(center,SS[index-1]);
+					console.log("left",center,radius,center.y - radius < line);
 					// may need a set to store added centers
 					if(center.y - radius < line && center.x < pt.x){
+						console.log("left in");
 						EL.insert(center.y - radius,center);
 						map.put(new circle(SS[index-2],SS[index-1],SS[index]),[center,radius]);
 					}
@@ -135,8 +144,10 @@
 				if(index < SS.length-2 && !map.containsKey(new circle(SS[index],SS[index+1],SS[index+2]))){
 					var center = point.center(SS[index],SS[index+1],SS[index+2]);
 					var radius = point.distance(center,SS[index+1]);
+					console.log("right",center,radius,center.y - radius < line);
 					// may need a set to store added centers
 					if(center.y - radius < line && center.x > pt.x){
+						console.log("right in");
 						EL.insert(center.y - radius,center);
 						map.put(new circle(SS[index],SS[index+1],SS[index+2]),[center,radius]);
 					}
@@ -150,7 +161,7 @@
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-2],SS[index-1],SS[index+1]);
 				var radius = point.distance(center,SS[index-1]);
-				console.log(yarr[0] == miny);
+				console.log("vertex left",center,radius,(yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x),center.y - radius < line);
 				if((yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x))
 					if(center.y - radius < line){
 						EL.insert(center.y - radius,center);
@@ -162,6 +173,7 @@
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-1],SS[index+1],SS[index+2]);
 				var radius = point.distance(center,SS[index+1]);
+				console.log("vertex right",center,radius,(yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x),center.y - radius < line);
 				if((yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x))
 					if(center.y - radius < line){
 						EL.insert(center.y - radius,center);
@@ -186,6 +198,7 @@
 				}
 			}
             SS.splice(index,1);
+			console.log(SS);
 			VD.push(pt);
 			addPoint([pt.x,pt.y],board);
         }
@@ -292,13 +305,11 @@ function BScenter(arr,left,right,value,line){
 			if(parabola(value, x) < minimum) minimum = parabola(value, x);
 		 }); 
 		 return minimum;}], {strokeColor:'red', strokeWidth:2});
- 
-// var li3 = board.create('line',[[-1,1],[1,-1]], {straightFirst:false, straightLast:false, strokeWidth:2});
 
  //initialize horizontal gdragable line
- var mp = board.create('point',[1,0],{name:"drag", withLabel: false, face:'o', size:8, strokeColor:'red', fillOpacity:0.6, strokeOpacity: 0.6});
+ var mp = board.create('point',[1,9],{name:"drag", withLabel: false, face:'o', size:8, strokeColor:'red', fillOpacity:0.6, strokeOpacity: 0.6});
  var horizontalLine = board.create('line',["drag",[20000,"Y(drag)"]], {straightFirst:true, straightLast:true, strokeWidth:1});
- 
+ var oldY = mp.Y();
  //drawParabolas(drawRandomPoints(10, board, attr), board);
 
  var getMouseCoords = function(e, i) {
@@ -336,3 +347,5 @@ function BScenter(arr,left,right,value,line){
     };
 
  board.on('down', down);
+
+ //addEdge([1,1], [2,2]);
