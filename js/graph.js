@@ -58,13 +58,15 @@ import BinaryHeap from "./maxheap.js"
  
 
  function drawHorizontalLine(Y){
+	if(finishClicked) return;
 	 var line = board.create('line',[[1,Y],[2,Y]], {straightFirst:true, straightLast:true, strokeWidth:1, strokeColor: "green"});
 	 mapYtoLine.put(Y, line);
  }
  
  function removeHorizontalLine(Y){
 	 var line = mapYtoLine.get(Y);
-	 line.hideElement();
+	 if(line != null)
+	 	line.hideElement();
  }
  
  function onclickRun(){
@@ -84,6 +86,7 @@ import BinaryHeap from "./maxheap.js"
  }
  
  function onclickFinish(){
+	finishClicked = true;
 	var element = document.getElementById("stepBtn");
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
@@ -122,11 +125,13 @@ import BinaryHeap from "./maxheap.js"
  }
  
  function moveSweepline(toY){
-	 var diff = Math.abs(toY - oldY);
-	 var runingTime = 300 * diff / 2;
-	 mp.moveTo([1,toY],runingTime);
-	 oldY = toY;
-	 return runingTime;
+	removeHorizontalLine(toY);
+	if(finishClicked) return;
+	var diff = Math.abs(toY - oldY);
+	var runingTime = 300 * diff / 2;
+	mp.moveTo([1,toY]);
+	oldY = toY;
+	return runingTime;
  }
  
  //add one point pt [x, y]
@@ -182,6 +187,7 @@ import BinaryHeap from "./maxheap.js"
 						// console.log(EL.findNode(center.y-radius));
 						console.log("remove",center,center.y - center.line);
 						removed.put(center,"");
+						removeHorizontalLine(center.line);
 						// EL.remove(center.y-radius);
 					}
                 }
@@ -198,6 +204,7 @@ import BinaryHeap from "./maxheap.js"
 						console.log("left in");
 						EL.insert(center);
 						map.put(new circle(SS[index-2],SS[index-1],SS[index]),center);
+						drawHorizontalLine(center.line);
 					}
 				}
 				if(index < SS.length-2 && !map.containsKey(new circle(SS[index],SS[index+1],SS[index+2]))){
@@ -209,6 +216,7 @@ import BinaryHeap from "./maxheap.js"
 						console.log("right in");
 						EL.insert(center);
 						map.put(new circle(SS[index],SS[index+1],SS[index+2]),center);
+						drawHorizontalLine(center.line);
 					}
 				}
             }
@@ -227,6 +235,7 @@ import BinaryHeap from "./maxheap.js"
 					if(center.line < line){
 						EL.insert(center);
 						map.put(new circle(SS[index-2],SS[index-1],SS[index+1]),center);
+						drawHorizontalLine(center.line);
 					}
 			}
 			if(index < SS.length-2 && index > 0 && !map.containsKey(new circle(SS[index-1],SS[index+1],SS[index+2]))){
@@ -239,6 +248,7 @@ import BinaryHeap from "./maxheap.js"
 					if(center.line < line){
 						EL.insert(center);
 						map.put(new circle(SS[index-1],SS[index+1],SS[index+2]),center);
+						drawHorizontalLine(center.line);
 					}
 			}
 
@@ -250,6 +260,7 @@ import BinaryHeap from "./maxheap.js"
 					console.log("remove",center,center.y - center.line);
 					// EL.remove(center.y-radius);
 					removed.put(center,"");
+					removeHorizontalLine(center.line);
 				}
 			}
 			if(index < SS.length-2){
@@ -260,6 +271,7 @@ import BinaryHeap from "./maxheap.js"
 					console.log("remove",center,center.y - center.line);
 					// EL.remove(center.y-radius);
 					removed.put(center,"");
+					removeHorizontalLine(center.line);
 				}
 			}
             SS.splice(index,1);
@@ -302,6 +314,10 @@ import BinaryHeap from "./maxheap.js"
 		element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-warning");
 	 
 	element = document.getElementById("stepBtn");
+		element.setAttribute("disabled", "");
+		element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+
+	element = document.getElementById("finishBtn");
 		element.setAttribute("disabled", "");
 		element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 		
@@ -411,6 +427,7 @@ function BScenter(arr,left,right,value,line){
  var removed = new Hashtable();
  var mapYtoLine = new Hashtable();
  var algFinished = false;
+ var finishClicked = false;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
