@@ -42,16 +42,20 @@
       </div>
     </form>
     <button id="startBtn" type="button" class="btn btn-success btn-lg btn-block">Start</button>
-    <button id="runBtn" type="button" class="btn btn-primary btn-lg btn-block" disabled>Run</button>
-    <button id="stepBtn" type="button" class="btn btn-primary btn-lg btn-block" disabled >Step</button>
+    <button id="runBtn" type="button" class="btn btn-secondary btn-lg btn-block" disabled>Run</button>
+    <button id="stepBtn" type="button" class="btn btn-secondary btn-lg btn-block" disabled >Step</button>
+    <button id="finishBtn" type="button" class="btn btn-secondary btn-lg btn-block" disabled >Finish</button>
     <button type="button" onClick="location.reload();" class="btn btn-warning btn-lg btn-block">Reset</button>
+    <button id="resetLineBtn" type="button" class="btn btn-warning btn-lg btn-block">Reset Line Position</button>
     <div>
     Instruction: <br />
     1. Click on board or use "Generate random points" to add point;<br />
-    2. After finish adding point, click on "Start" to start;<br />
+    2. After finish adding point, click on "Start" first to start;<br />
     3. Step : run Fortune's algorithm step by step;<br />
     4. Reset: remove all objects on canvas;<br />
-    5. Show/Hide parabola: switch between showing beach line only or showing beach line and all parabolas;<br />
+    5. Reset Line Position: reset sweep line position to (0,0)<br />
+    6. Show/Hide parabola: switch between showing beach line only or showing beach line and all parabolas;<br />
+    7. You can move the sweep line by red point;
     </div>
 </div>
 </div>

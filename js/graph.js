@@ -9,8 +9,10 @@ import vdedge from "./vdedge.js";
 	range = (typeof range !== 'undefined') ?  range :  [-10, 10, 10, -10];
 	var p = [];
 	var i;
-	for (i=0;i<len;i++) 
+	for (i=0;i<len;i++){
 		p[i] = brd.create('point',[Math.random() * (range[1] - range[0]) + range[0], Math.random() * (range[3] - range[2]) + range[2]],attr);
+		p[i].isDraggable = false;
+	}
 	points = points.concat(p);
 	return p;
  }
@@ -53,38 +55,89 @@ import vdedge from "./vdedge.js";
      drawParabolas(drawRandomPoints(number, board, attr), board);
  }
  
+
+ 
  function onclickRun(){
-	//  document.getElementById("stepBtn").setAttribute("disabled","");
-	//  mp.moveTo([1,-9],6000);
-	SS = [];
+	var element = document.getElementById("stepBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	var element = document.getElementById("runBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	var element = document.getElementById("finishBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	while(!algFinished){
+		onclickNextStep();
+		//delay stepRunningTime
+		
+	}
+	
+	/*SS = [];
 	EL = new RbTree();
 	VD = [];
 	map = new Hashtable();
 	for(var pt of points){
 		var ptclass = new point(pt.X(),pt.Y(),true);
 		EL.insert(ptclass.y,ptclass);
-	}
+	}*/
+ }
+ 
+ function onclickFinish(){
+	var element = document.getElementById("stepBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	var element = document.getElementById("runBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	var element = document.getElementById("finishBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
+	 while(!algFinished)
+		onclickNextStep();
+	
  }
  
  function onclickStart(){
 	 if(startClicked) return;
 	 startClicked = true;
-	 mp.moveTo([1,11]);
+	 mp.moveTo([1,15]);
 	 for(var pt of points){
 		var ptclass = new point(pt.X(),pt.Y(),true);
         EL.insert(ptclass.y,ptclass);
     }
-	 document.getElementById("runBtn").removeAttribute("disabled");
-	 document.getElementById("stepBtn").removeAttribute("disabled");
+	 
+	 var element = document.getElementById("runBtn");
+	 element.removeAttribute("disabled");
+  	 element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-primary");
+	 
+	 element = document.getElementById("stepBtn");
+	 element.removeAttribute("disabled");
+  	 element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-primary");
+	 
+	 element = document.getElementById("finishBtn");
+	 element.removeAttribute("disabled");
+  	 element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-primary");
+	 
 	 document.getElementById("generateBtn").setAttribute("disabled","");
 	 
+	 element = document.getElementById("resetLineBtn");
+	 element.setAttribute("disabled","");
+  	 element.className = element.className.replace(/\bbtn-warning\b/g, "btn-secondary");
  }
  
  function moveSweepline(toY){
 	 var diff = Math.abs(toY - oldY);
-	 var runingTime = 1000 * diff / 2;
+	 var runingTime = 300 * diff / 2;
 	 mp.moveTo([1,toY],runingTime);
 	 oldY = toY;
+	 return runingTime;
  }
  
  //add one point pt [x, y]
@@ -111,11 +164,15 @@ import vdedge from "./vdedge.js";
  }
  
  function onclickNextStep(){
+	var element = document.getElementById("runBtn");
+	element.setAttribute("disabled", "");
+	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	
 	if(EL.size > 0){
         var node = EL.maxNode();
         var pt = node.value;
 		var line = node.key;
-		moveSweepline(line);
+		stepRunningTime = moveSweepline(line);
 		var index = -1;
 		EL.remove(node.key);
         if(pt.isSite){
@@ -247,6 +304,19 @@ import vdedge from "./vdedge.js";
 			}
 		}
 	}
+	var element = document.getElementById("resetLineBtn");
+		element.removeAttribute("disabled");
+		element.className = element.className.replace(/\bbtn-secondary\b/g, "btn-warning");
+		
+	element = document.getElementById("runBtn");
+		element.setAttribute("disabled", "");
+		element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+	 
+	element = document.getElementById("stepBtn");
+		element.setAttribute("disabled", "");
+		element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
+		
+	algFinished = true;
  }
 
  function updateVertex(points,center){
@@ -349,6 +419,7 @@ function BScenter(arr,left,right,value,line){
  var VD = [];
  var map = new Hashtable();
  var vde = new Hashtable();
+ var algFinished = false, stepRunningTime = 500;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
@@ -356,7 +427,7 @@ function BScenter(arr,left,right,value,line){
 		withLabel: false
 	};
 	
- var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-10, 10, 10, -10], axis:false});
+ var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-12, 12, 12, -12], axis:false});
  
  document.getElementById("generateBtn").onclick = onclickGenerate;
  document.getElementById("option1").onclick = showAllParabolas;
@@ -364,6 +435,8 @@ function BScenter(arr,left,right,value,line){
  document.getElementById("startBtn").onclick = onclickStart;
  document.getElementById("runBtn").onclick = onclickRun;
  document.getElementById("stepBtn").onclick = onclickNextStep;
+ document.getElementById("finishBtn").onclick = onclickFinish;
+ document.getElementById("resetLineBtn").onclick = function(){mp.moveTo([0,0]);};
  
  //beachline, initialize only once because reference to points array
  board.create('functiongraph', [function(x){
@@ -407,6 +480,7 @@ function BScenter(arr,left,right,value,line){
                
         if (canCreate) {
             var tmp = board.create('point', [coords.usrCoords[1], coords.usrCoords[2]], attr);
+			tmp.isDraggable = false;
 			points.push(tmp);
 			var tmpArr = [tmp];
 			drawParabolas(tmpArr, board);
@@ -414,5 +488,3 @@ function BScenter(arr,left,right,value,line){
     };
 
  board.on('down', down);
-
- //addEdge([1,1], [2,2]);
