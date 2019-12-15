@@ -103,6 +103,13 @@ import vdedge from "./vdedge.js";
 	 var li3 = board.create('line',[[point1[0],point1[1]],[point2[0],point2[1]]], edgeAttr);
  }
  
+ //draw a ray from point1 to point2 and start from point2
+ function addRay(point1, point2){
+	 var edgeAttr = {straightFirst:false, straightLast:true, strokeWidth:2, strokeColor:'black'};
+	 var end0 = 2 * point2[0] - point1[0], end1 = 2 * point2[1] - point1[1];
+	 board.create('line',[point2,[end0, end1]], edgeAttr);
+ }
+ 
  function onclickNextStep(){
 	if(EL.size > 0){
         var node = EL.maxNode();
