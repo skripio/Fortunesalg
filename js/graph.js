@@ -2,6 +2,7 @@
  import point from "./Point.js"
  import circle from "./circle.js"
 import vdedge from "./vdedge.js";
+import BinaryHeap from "./maxheap.js"
  
  //draw (len) random points of (range) with (attr) on brd, concate new points to current point set 
  function drawRandomPoints(len, brd, attr, range){
@@ -110,7 +111,7 @@ import vdedge from "./vdedge.js";
 	 mp.moveTo([1,15]);
 	 for(var pt of points){
 		var ptclass = new point(pt.X(),pt.Y(),true);
-        EL.insert(ptclass.y,ptclass);
+        EL.insert(ptclass);
     }
 	 
 	 var element = document.getElementById("runBtn");
@@ -168,13 +169,17 @@ import vdedge from "./vdedge.js";
 	element.setAttribute("disabled", "");
 	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
 	
-	if(EL.size > 0){
-        var node = EL.maxNode();
-        var pt = node.value;
-		var line = node.key;
+	if(EL.size() > 0){
+        // var node = EL.maxNode();
+		var pt = EL.removeHead();
+		if(removed.containsKey(pt)){
+			onclickNextStep();
+			return;
+		}
+		var line = pt.line;
 		stepRunningTime = moveSweepline(line);
 		var index = -1;
-		EL.remove(node.key);
+		// EL.remove(node.key);
         if(pt.isSite){
             if(SS.length == 0){
                 SS.push(pt);
@@ -184,15 +189,16 @@ import vdedge from "./vdedge.js";
 				var intersec = above.pointInpara(pt.x,line);
 				vde.put(new vdedge(pt,above),[intersec]);
                 if(index > 0 && index < SS.length - 1 && !point.isSamePoint(SS[index-1],SS[index+1])){
-					var cir = map.get(new circle(SS[index-1],above,SS[index+1]));
-					if(cir != null){
-						var center = cir[0];
-						var radius = cir[1];
+					var center = map.get(new circle(SS[index-1],above,SS[index+1]));
+					if(center != null){
+						// var center = cir[0];
+						// var radius = cir[1];
 						// console.log(SS[index-1],above,SS[index+1]);
 						// console.log(EL.toSortedArray());
 						// console.log(EL.findNode(center.y-radius));
-						console.log("remove",center,radius);
-						EL.remove(center.y-radius);
+						console.log("remove",center,center.y - center.line);
+						removed.put(center,"");
+						// EL.remove(center.y-radius);
 					}
                 }
                 SS.splice(index,0,above,pt);
@@ -200,24 +206,25 @@ import vdedge from "./vdedge.js";
 				console.log(SS,index);
 				if(index > 1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index]))){
 					var center = point.center(SS[index-2],SS[index-1],SS[index]);
-					var radius = point.distance(center,SS[index-1]);
-					console.log("left",center,radius,center.y - radius < line);
+					// var radius = point.distance(center,SS[index-1]);
+					// center.line = center.y - radius;
+					console.log("left",center,center.y - center.line,center.line < line);
 					// may need a set to store added centers
-					if(center.y - radius < line && center.x < pt.x){
+					if(center.line < line && center.x < pt.x){
 						console.log("left in");
-						EL.insert(center.y - radius,center);
-						map.put(new circle(SS[index-2],SS[index-1],SS[index]),[center,radius]);
+						EL.insert(center);
+						map.put(new circle(SS[index-2],SS[index-1],SS[index]),center);
 					}
 				}
 				if(index < SS.length-2 && !map.containsKey(new circle(SS[index],SS[index+1],SS[index+2]))){
 					var center = point.center(SS[index],SS[index+1],SS[index+2]);
-					var radius = point.distance(center,SS[index+1]);
-					console.log("right",center,radius,center.y - radius < line);
+					// var radius = point.distance(center,SS[index+1]);
+					console.log("right",center,center.y - center.line,center.line < line);
 					// may need a set to store added centers
-					if(center.y - radius < line && center.x > pt.x){
+					if(center.line < line && center.x > pt.x){
 						console.log("right in");
-						EL.insert(center.y - radius,center);
-						map.put(new circle(SS[index],SS[index+1],SS[index+2]),[center,radius]);
+						EL.insert(center);
+						map.put(new circle(SS[index],SS[index+1],SS[index+2]),center);
 					}
 				}
             }
@@ -230,43 +237,45 @@ import vdedge from "./vdedge.js";
 				var yarr = [SS[index-2].y,SS[index-1].y,SS[index+1].y];
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-2],SS[index-1],SS[index+1]);
-				var radius = point.distance(center,SS[index-1]);
-				console.log("vertex left",center,radius,(yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x),center.y - radius < line);
+				// var radius = point.distance(center,SS[index-1]);
+				console.log("vertex left",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x),center.line < line);
 				if((yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x))
-					if(center.y - radius < line){
-						EL.insert(center.y - radius,center);
-						map.put(new circle(SS[index-2],SS[index-1],SS[index+1]),[center,radius]);
+					if(center.line < line){
+						EL.insert(center);
+						map.put(new circle(SS[index-2],SS[index-1],SS[index+1]),center);
 					}
 			}
 			if(index < SS.length-2 && index > 0 && !map.containsKey(new circle(SS[index-1],SS[index+1],SS[index+2]))){
 				var yarr = [SS[index-1].y,SS[index+1].y,SS[index+2].y];
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-1],SS[index+1],SS[index+2]);
-				var radius = point.distance(center,SS[index+1]);
-				console.log("vertex right",center,radius,(yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x),center.y - radius < line);
+				// var radius = point.distance(center,SS[index+1]);
+				console.log("vertex right",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x),center.line < line);
 				if((yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x))
-					if(center.y - radius < line){
-						EL.insert(center.y - radius,center);
-						map.put(new circle(SS[index-1],SS[index+1],SS[index+2]),[center,radius]);
+					if(center.line < line){
+						EL.insert(center);
+						map.put(new circle(SS[index-1],SS[index+1],SS[index+2]),center);
 					}
 			}
 
 			if(index > 1){
-				var cir = map.get(new circle(SS[index-2],SS[index-1],SS[index]));
-				if(cir != null){
-					var center = cir[0];
-					var radius = cir[1];
-					console.log("remove",center,radius);
-					EL.remove(center.y-radius);
+				var center = map.get(new circle(SS[index-2],SS[index-1],SS[index]));
+				if(center != null){
+					// var center = cir[0];
+					// var radius = cir[1];
+					console.log("remove",center,center.y - center.line);
+					// EL.remove(center.y-radius);
+					removed.put(center,"");
 				}
 			}
 			if(index < SS.length-2){
-				var cir = map.get(new circle(SS[index],SS[index+1],SS[index+2]));
-				if(cir != null){
-					var center = cir[0];
-					var radius = cir[1];
-					console.log("remove",center,radius);
-					EL.remove(center.y-radius);
+				var center = map.get(new circle(SS[index],SS[index+1],SS[index+2]));
+				if(center != null){
+					// var center = cir[0];
+					// var radius = cir[1];
+					console.log("remove",center,center.y - center.line);
+					// EL.remove(center.y-radius);
+					removed.put(center,"");
 				}
 			}
             SS.splice(index,1);
@@ -415,10 +424,11 @@ function BScenter(arr,left,right,value,line){
  var showPara = true;
  var startClicked = false;
  var SS = [];
- var EL = new RbTree();
+ var EL = new BinaryHeap();
  var VD = [];
  var map = new Hashtable();
  var vde = new Hashtable();
+ var removed = new Hashtable();
  var algFinished = false, stepRunningTime = 500;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {

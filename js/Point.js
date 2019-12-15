@@ -4,6 +4,7 @@
 	  this.y = y;
 	  this.isSite = isSite;
 	  this.isVD = isVD;
+	  this.line = y;
 	//   this.points = points;
 	}
 
@@ -32,7 +33,10 @@
 		}
 		// var points = [];
 		// points.push(p1,p2,p3);
-		return new point(lastX,lastY,false,true);
+		var cp = new point(lastX,lastY,false,true);
+		var radius = this.distance(cp,p2);
+		cp.line = cp.y - radius;
+		return cp;
 	}
 
 	static distance(a, b) {
