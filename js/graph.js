@@ -160,6 +160,8 @@ import vdedge from "./vdedge.js";
         }else{
 			index = BScenter(SS,0,SS.length,pt.x,line);
 			console.log(index,pt);
+			var ln = SS[index-1], md = SS[index], rn = SS[index+1];
+			updateVertex([ln,md,rn],pt);
 			if(index > 1 && index < SS.length-1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index+1]))){
 				var yarr = [SS[index-2].y,SS[index-1].y,SS[index+1].y];
 				var miny = Math.min(...yarr);
@@ -209,6 +211,28 @@ import vdedge from "./vdedge.js";
 			addPoint([pt.x,pt.y],board);
         }
     }
+ }
+
+ function updateVertex(points,center){
+	for(var i = 0; i < 3; i++){
+		var p1 = points[i], p2 = points[(i+1)%3];
+		var inter = vde.get(new vdedge(p1,p2));
+		if(inter == null){
+			inter = [center];
+		}else{
+			if(inter.length == 1){
+				inter.push(center);
+			}else if(inter.length == 2){
+				if(!inter[0].isVD){
+					inter[0] = center;
+				}else if(!inter[1].isVD){
+					inter[1] = center;
+				}
+			}
+			addEdge([inter[0].x,inter[0].y],[inter[1].x,inter[1].y]);
+		}
+		vde.put(new vdedge(p1,p2),inter);
+	}
  }
 
  function BSarc(arr,left,right,value,line){

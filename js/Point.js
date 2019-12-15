@@ -32,7 +32,7 @@
 		}
 		// var points = [];
 		// points.push(p1,p2,p3);
-		return new point(lastX,lastY,false);
+		return new point(lastX,lastY,false,true);
 	}
 
 	static distance(a, b) {
@@ -60,7 +60,7 @@
 		var x = this.x;
 		var y = this.y;
 		var a = 1/(2*(y-yp)), b = -x/(y-yp), c = (x*x+y*y-yp*yp)/(2*(y-yp));
-		ycoor = a*xcoor*xcoor + b * xcoor + c;
+		var ycoor = a*xcoor*xcoor + b * xcoor + c;
 		return new point(xcoor,ycoor,null,false);
 	}
 

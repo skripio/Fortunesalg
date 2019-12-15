@@ -1,8 +1,9 @@
 import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
 import point from "./Point.js"
 import circle from "./circle.js"
+import vdedge from "./vdedge.js"
 
-var map = new Hashtable();
+var vde = new Hashtable();
 var p1 = new point(-1.126, -4.792,true);
 var p2 = new point(2.481, 0.963,true);
 var p3 = new point(3.733, -3.614,true);
@@ -10,42 +11,44 @@ var p4 = new point(-5.323, -2.636,true);
 var c = new circle(p1,p2,p3);
 var center = point.center(p1,p2,p3);
 var radius = point.distance(center,p2);
-map.put(new circle(p1,p2,p4),[center,radius]);
-console.log(map.get(c));
-// may need a set to store added centers
-if(center.y - radius < p1.y && center.x > p1.x){
-	//EL.insert(center.y - radius,center);
-	map.put(new circle(p1,p2,p3),[center,radius]);
-}
-//var inter = point.paraIntersection(p1,p2,p3);
-//console.log(inter);
+var inter = p2.pointInpara(p1.x,p1.y);
+vde.put(new vdedge(p1,p2),[inter]);
+updateVertex([p1,p2,p3],center);
+console.log(vde.get(new vdedge(p1,p2)),vde.get(new vdedge(p1,p3)),vde.get(new vdedge(p2,p3)));
+// map.put(new circle(p1,p2,p4),[center,radius]);
+// console.log(map.get(c));
+// // may need a set to store added centers
+// if(center.y - radius < p1.y && center.x > p1.x){
+// 	//EL.insert(center.y - radius,center);
+// 	map.put(new circle(p1,p2,p3),[center,radius]);
+// }
 
-//if(!map.containsKey(new circle(p1,p2,p3))){
-//    var yarr = [p1.y,p2.y,p3.y];
-//    var miny = Math.min(...yarr);
-//    var center = point.center(p1,p2,p3);
-//    var radius = point.distance(center,p2);
-//    console.log(yarr[0],miny);
-//    // if((yarr[0] == miny && center.x > p1.x) || (yarr[2] == miny && center.x < p3.x))
-//    //     if(center.y - radius < p3.y){
-//    //         EL.insert(center.y - radius,center);
-//    //         map.put(new circle(p1,p2,p3),[center,radius]);
-//    //     }
-//}
-console.log(map.get(new circle(p1,p2,p3)));
-// var center = point.center(p1,p2,p3);
-// var radius = point.distance(center,p2);
-// map.put(c,[center,radius]);
-// console.log(map.get(new circle(p2,p1,p3)));
-// console.log(c.points);
-
-var rbTree = new RbTree();
-var i;
-rbTree.insert(1, "foo");
-rbTree.insert(1, "var");
-rbTree.remove(1);
-rbTree.print();
-console.log(rbTree.toSortedArray());
+// var rbTree = new RbTree();
+// var i;
+// rbTree.insert(1, "foo");
+// rbTree.insert(1, "var");
+// rbTree.remove(1);
+// rbTree.print();
+// console.log(rbTree.toSortedArray());
+function updateVertex(points,center){
+	for(var i = 0; i < 3; i++){
+		var p1 = points[i], p2 = points[(i+1)%3];
+		var inter = vde.get(new vdedge(p1,p2));
+		if(inter == null){
+			inter = [center];
+		}else if(inter.length == 1){
+			inter.push(center);
+		}else if(inter.length == 2){
+			if(!inter[0].isVD){
+				inter[0] = center;
+			}else if(!inter[1].isVD){
+				inter[1] = center;
+			}
+			addEdge([inter[0].x,inter[0].y],[inter[1].x,inter[1].y]);
+        }
+        vde.put(new vdedge(p1,p2),inter);
+	}
+ }
 // var p1 = new point(115.8, 39.8,true);
 // var p2 = new point(116.3, 39.9,true);
 // var p3 = new point(117, 39.5,true);
