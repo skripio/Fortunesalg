@@ -4,17 +4,19 @@ import circle from "./circle.js"
 import vdedge from "./vdedge.js"
 
 var vde = new Hashtable();
-var p1 = new point(-1.126, -4.792,true);
-var p2 = new point(2.481, 0.963,true);
-var p3 = new point(3.733, -3.614,true);
+var p1 = new point(-9.199503121270546,9.951479730921626,true);
+var p2 = new point(-9.910233839978812, 9.674065716873068,true);
+var p3 = new point(-9.96147497094292,7.2166756120903885,true);
 var p4 = new point(-5.323, -2.636,true);
 var c = new circle(p1,p2,p3);
 var center = point.center(p1,p2,p3);
-var radius = point.distance(center,p2);
-var inter = p2.pointInpara(p1.x,p1.y);
-vde.put(new vdedge(p1,p2),[inter]);
-updateVertex([p1,p2,p3],center);
-console.log(vde.get(new vdedge(p1,p2)),vde.get(new vdedge(p1,p3)),vde.get(new vdedge(p2,p3)));
+console.log(center);
+console.log(point.paraIntersection(p1,p2,center.line),point.paraIntersection(p2,p3,center.line));
+// var radius = point.distance(center,p2);
+// var inter = p2.pointInpara(p1.x,p1.y);
+// vde.put(new vdedge(p1,p2),[inter]);
+// updateVertex([p1,p2,p3],center);
+// console.log(vde.get(new vdedge(p1,p2)),vde.get(new vdedge(p1,p3)),vde.get(new vdedge(p2,p3)));
 // map.put(new circle(p1,p2,p4),[center,radius]);
 // console.log(map.get(c));
 // // may need a set to store added centers
