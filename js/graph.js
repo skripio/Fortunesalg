@@ -1,4 +1,4 @@
- import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
+
  import point from "./Point.js"
  import circle from "./circle.js"
 import vdedge from "./vdedge.js";
@@ -155,7 +155,6 @@ import BinaryHeap from "./maxheap.js"
  
  function onclickNextStep(){
 	if(EL.size() > 0){
-        // var node = EL.maxNode();
 		var pt = EL.removeHead();
 		if(removed.containsKey(pt)){
 			onclickNextStep();
@@ -164,7 +163,6 @@ import BinaryHeap from "./maxheap.js"
 		var line = pt.line;
 		moveSweepline(line);
 		var index = -1;
-		// EL.remove(node.key);
         if(pt.isSite){
             if(SS.length == 0){
                 SS.push(pt);
@@ -176,28 +174,19 @@ import BinaryHeap from "./maxheap.js"
                 if(index > 0 && index < SS.length - 1 && !point.isSamePoint(SS[index-1],SS[index+1])){
 					var center = map.get(new circle(SS[index-1],above,SS[index+1]));
 					if(center != null){
-						// var center = cir[0];
-						// var radius = cir[1];
-						// console.log(SS[index-1],above,SS[index+1]);
-						// console.log(EL.toSortedArray());
-						// console.log(EL.findNode(center.y-radius));
-						console.log("remove",center,center.y - center.line);
+						// console.log("remove",center,center.y - center.line);
 						removed.put(center,"");
 						removeHorizontalLine(center.line);
-						// EL.remove(center.y-radius);
 					}
                 }
                 SS.splice(index,0,above,pt);
 				index++;
-				console.log(SS,index);
+				// console.log(SS,index);
 				if(index > 1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index]))){
 					var center = point.center(SS[index-2],SS[index-1],SS[index]);
-					// var radius = point.distance(center,SS[index-1]);
-					// center.line = center.y - radius;
-					console.log("left",center,center.y - center.line,center.line < line);
-					// may need a set to store added centers
+					// console.log("left",center,center.y - center.line,center.line < line);
 					if(center.line < line && center.x < pt.x){
-						console.log("left in");
+						// console.log("left in");
 						EL.insert(center);
 						map.put(new circle(SS[index-2],SS[index-1],SS[index]),center);
 						drawHorizontalLine(center.line);
@@ -205,11 +194,9 @@ import BinaryHeap from "./maxheap.js"
 				}
 				if(index < SS.length-2 && !map.containsKey(new circle(SS[index],SS[index+1],SS[index+2]))){
 					var center = point.center(SS[index],SS[index+1],SS[index+2]);
-					// var radius = point.distance(center,SS[index+1]);
-					console.log("right",center,center.y - center.line,center.line < line);
-					// may need a set to store added centers
+					// console.log("right",center,center.y - center.line,center.line < line);
 					if(center.line < line && center.x > pt.x){
-						console.log("right in");
+						// console.log("right in");
 						EL.insert(center);
 						map.put(new circle(SS[index],SS[index+1],SS[index+2]),center);
 						drawHorizontalLine(center.line);
@@ -218,15 +205,14 @@ import BinaryHeap from "./maxheap.js"
             }
         }else{
 			index = BScenter(SS,0,SS.length,pt.x,line);
-			console.log(index,pt);
+			// console.log(index,pt);
 			var ln = SS[index-1], md = SS[index], rn = SS[index+1];
 			updateVertex([ln,md,rn],pt);
 			if(index > 1 && index < SS.length-1 && !map.containsKey(new circle(SS[index-2],SS[index-1],SS[index+1]))){
 				var yarr = [SS[index-2].y,SS[index-1].y,SS[index+1].y];
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-2],SS[index-1],SS[index+1]);
-				// var radius = point.distance(center,SS[index-1]);
-				console.log("vertex left",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x),center.line < line);
+				// console.log("vertex left",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x),center.line < line);
 				if((yarr[0] == miny && center.x > SS[index-2].x) || (yarr[2] == miny && center.x < SS[index+1].x))
 					if(center.line < line){
 						EL.insert(center);
@@ -238,8 +224,7 @@ import BinaryHeap from "./maxheap.js"
 				var yarr = [SS[index-1].y,SS[index+1].y,SS[index+2].y];
 				var miny = Math.min(...yarr);
 				var center = point.center(SS[index-1],SS[index+1],SS[index+2]);
-				// var radius = point.distance(center,SS[index+1]);
-				console.log("vertex right",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x),center.line < line);
+				// console.log("vertex right",center,center.y - center.line,(yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x),center.line < line);
 				if((yarr[0] == miny && center.x > SS[index-1].x) || (yarr[2] == miny && center.x < SS[index+2].x))
 					if(center.line < line){
 						EL.insert(center);
@@ -251,10 +236,7 @@ import BinaryHeap from "./maxheap.js"
 			if(index > 1){
 				var center = map.get(new circle(SS[index-2],SS[index-1],SS[index]));
 				if(center != null){
-					// var center = cir[0];
-					// var radius = cir[1];
-					console.log("remove",center,center.y - center.line);
-					// EL.remove(center.y-radius);
+					// console.log("remove",center,center.y - center.line);
 					removed.put(center,"");
 					removeHorizontalLine(center.line);
 				}
@@ -262,16 +244,13 @@ import BinaryHeap from "./maxheap.js"
 			if(index < SS.length-2){
 				var center = map.get(new circle(SS[index],SS[index+1],SS[index+2]));
 				if(center != null){
-					// var center = cir[0];
-					// var radius = cir[1];
-					console.log("remove",center,center.y - center.line);
-					// EL.remove(center.y-radius);
+					// console.log("remove",center,center.y - center.line);
 					removed.put(center,"");
 					removeHorizontalLine(center.line);
 				}
 			}
             SS.splice(index,1);
-			console.log(SS);
+			// console.log(SS);
 			VD.push(pt);
 			addPoint([pt.x,pt.y],board);
         }
@@ -395,7 +374,7 @@ function BScenter(arr,left,right,value,line){
 			ri = point.paraIntersection(arc,arr[mid+1],line)[boundindex];
 		}
 	}
-	console.log(mid,li,ri);
+	// console.log(mid,li,ri);
     if(point.xEqualwithEpsilon(li,value) && point.xEqualwithEpsilon(ri,value)){
         return mid;
     }else if(point.xEqualwithEpsilon(li,value)){

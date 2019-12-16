@@ -1,4 +1,4 @@
-import RbTree from "../node_modules/red-black-tree-js/src/rbTree.js"
+
 import point from "./Point.js"
 import circle from "./circle.js"
 import vdedge from "./vdedge.js"
