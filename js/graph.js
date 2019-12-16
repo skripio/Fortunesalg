@@ -69,22 +69,6 @@ import BinaryHeap from "./maxheap.js"
 	 	line.hideElement();
  }
  
- function onclickRun(){
-	var element = document.getElementById("stepBtn");
-	element.setAttribute("disabled", "");
-	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
-	
-	element = document.getElementById("finishBtn");
-	element.setAttribute("disabled", "");
-	element.className = element.className.replace(/\bbtn-primary\b/g, "btn-secondary");
-	
-	while(!algFinished){
-		onclickNextStep();
-		//delay stepRunningTime
-		
-	}
- }
- 
  function onclickFinish(){
 	finishClicked = true;
 	var element = document.getElementById("stepBtn");
@@ -98,6 +82,17 @@ import BinaryHeap from "./maxheap.js"
 	 while(!algFinished)
 		onclickNextStep();
 	
+ }
+ 
+ function onclickAnimation(){
+	 if(animated){ 
+	 	document.getElementById("animationBtn").innerHTML = "Animation: OFF";
+	 	animated = false;
+	 }
+	 else{ 
+		document.getElementById("animationBtn").innerHTML = "Animation: ON";
+	 	animated = true;
+	 }
  }
  
  function onclickStart(){
@@ -129,7 +124,8 @@ import BinaryHeap from "./maxheap.js"
 	if(finishClicked) return;
 	var diff = Math.abs(toY - oldY);
 	var runingTime = 300 * diff / 2;
-	mp.moveTo([1,toY]);
+	if(animated) mp.moveTo([1,toY], runingTime);
+	else  mp.moveTo([1,toY]);
 	oldY = toY;
 	return runingTime;
  }
@@ -417,7 +413,7 @@ function BScenter(arr,left,right,value,line){
  var beachline;
  var points = [];
  var parabolas = [];
- var showPara = true;
+ var showPara = false;
  var startClicked = false;
  var SS = [];
  var EL = new BinaryHeap();
@@ -428,6 +424,7 @@ function BScenter(arr,left,right,value,line){
  var mapYtoLine = new Hashtable();
  var algFinished = false;
  var finishClicked = false;
+ var animated = false;
  //var stepPosistions = [10,8,6,4,2,0,-2,-4,-6,-8,-10], currStep = 0;
  var attr = {
 		fillColor: "black",
@@ -443,6 +440,7 @@ function BScenter(arr,left,right,value,line){
  document.getElementById("startBtn").onclick = onclickStart;
  document.getElementById("stepBtn").onclick = onclickNextStep;
  document.getElementById("finishBtn").onclick = onclickFinish;
+ document.getElementById("animationBtn").onclick = onclickAnimation;
  document.getElementById("resetLineBtn").onclick = function(){mp.moveTo([0,0]);};
  
  //beachline, initialize only once because reference to points array
